@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Hub - Fixtures & Results</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Smooth transitions */
+        .fade-in { animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Hide scrollbar for horizontal scrolling on mobile */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans pb-20">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="bg-emerald-600 p-1.5 rounded-lg flex items-center justify-center">
+                    <i data-lucide="trophy" class="text-white w-5 h-5"></i>
+                </div>
+                <h1 class="text-lg font-bold text-slate-900">Team Hub</h1>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 flex space-x-6 border-b border-slate-200">
+            <button onclick="switchTab('upcoming')" id="tab-upcoming" class="py-4 text-sm font-semibold border-b-2 transition-colors border-emerald-600 text-emerald-600">
+                Upcoming Matches (<span id="count-upcoming">0</span>)
+            </button>
+            <button onclick="switchTab('results')" id="tab-results" class="py-4 text-sm font-semibold border-b-2 transition-colors border-transparent text-slate-500 hover:text-slate-700">
+                Past & Results (<span id="count-results">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        
+        <!-- Filter Controls as Buttons -->
+        <div class="mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
+            <div id="division-filters" class="flex flex-nowrap sm:flex-wrap gap-2 w-max sm:w-auto">
+                <!-- Buttons populated dynamically by JS -->
+            </div>
+        </div>
+
+        <!-- Upcoming Container -->
+        <div id="upcoming-container" class="space-y-2 block"></div>
+
+        <!-- Results Container -->
+        <div id="results-container" class="space-y-2 hidden"></div>
+    </main>
+
+    <!-- Result Update Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl fade-in">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-900">Update Match Result</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x-circle" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <form id="result-form" class="p-6">
+                <input type="hidden" id="modal-fixture-id">
+                
+                <div class="mb-6">
+                    <p class="text-sm text-slate-500 mb-1" id="modal-opponent"></p>
+                    <p class="text-xs font-medium text-slate-400" id="modal-details"></p>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Match Outcome</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button type="button" onclick="setOutcome('Won')" id="btn-Won" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-emerald-50 border-emerald-500 text-emerald-700">Won</button>
+                            <button type="button" onclick="setOutcome('Lost')" id="btn-Lost" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Lost</button>
+                            <button type="button" onclick="setOutcome('Draw')" id="btn-Draw" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Draw</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Notes / Score (Optional)</label>
+                        <input type="text" id="modal-notes" placeholder="e.g. Won by 5 wickets, 120/4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow text-sm">
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-sm">
+                        Save Result
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        const initialFixtures = [
+            // Under 11
+            { id: 'u11-1', date: "03/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Goresbrook CC" },
+            { id: 'u11-2', date: "10/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Newham CC", away: "Memorial Park Cricket Academy" },
+            { id: 'u11-3', date: "05/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Aztecs CC, Ilford B" },
+            { id: 'u11-4', date: "12/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Ekota Academy", away: "Memorial Park Cricket Academy" },
+            { id: 'u11-5', date: "26/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "South Loughton CC" },
+            { id: 'u11-6', date: "02/08/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Fives and Heronians CC B", away: "Memorial Park Cricket Academy" },
+            // Under 9 - Don Coates
+            { id: 'u9dc-1', date: "10/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Aztecs CC, Ilford - Under 9 - DC" },
+            { id: 'u9dc-2', date: "17/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Frenford CC - Under 9 - DC B", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            { id: 'u9dc-3', date: "24/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Buckhurst Hill CC - Under 9 B" },
+            { id: 'u9dc-4', date: "31/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Walthamstow CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            { id: 'u9dc-5', date: "28/06/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Woodford Wells CC - Under 9 - DC B" },
+            { id: 'u9dc-6', date: "12/07/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Woodford Green CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            // Under 9 - Freddie Goldman
+            { id: 'u9fg-1', date: "07/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Woodford Wells CC - Under 9", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            { id: 'u9fg-2', date: "14/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Leyton Wicketz CC - Under 9" },
+            { id: 'u9fg-3', date: "05/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Wanstead & Snaresbrook CC - Under 9 - Hardball A", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            { id: 'u9fg-4', date: "19/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Ilford CC - Under 9" },
+            { id: 'u9fg-5', date: "26/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Bancroft Lions CC - Under 9 - Hardball", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+        ];
+
+        let results = JSON.parse(localStorage.getItem('cricketAppResults')) || {};
+        let currentOutcome = 'Won';
+        let activeTab = 'upcoming';
+        let currentDivisionFilter = 'All';
+
+        const parseDate = (dateStr) => {
+            const [d, m, y] = dateStr.split('/');
+            return new Date(y, m - 1, d);
+        };
+
+        const getMatchDetails = (fixture) => {
+            const isOurHome = fixture.home.includes("Memorial Park");
+            const opponent = isOurHome ? fixture.away : fixture.home;
+            const cleanOpponent = opponent.replace(" - Under 9", "").replace(" - DC", "").trim();
+            return {
+                opponent: cleanOpponent,
+                isHome: isOurHome,
+                locationType: isOurHome ? 'Home' : 'Away'
+            };
+        };
+
+        // Render the filter buttons dynamically
+        function renderFilters() {
+            const filterContainer = document.getElementById('division-filters');
+            const uniqueDivisions = ['All', ...new Set(initialFixtures.map(f => f.division))];
+            
+            filterContainer.innerHTML = uniqueDivisions.map(division => {
+                const isActive = currentDivisionFilter === division;
+                
+                // Define classes based on whether the button is the active filter
+                const activeClasses = "bg-slate-800 text-white shadow-md border-slate-800";
+                const inactiveClasses = "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50";
+                
+                const label = division === 'All' ? 'All Divisions' : division;
+                
+                return `
+                    <button 
+                        onclick="filterDivision('${division}')" 
+                        class="px-4 py-2 rounded-xl text-sm font-semibold border transition-all whitespace-nowrap ${isActive ? activeClasses : inactiveClasses}"
+                    >
+                        ${label}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function filterDivision(divisionValue) {
+            currentDivisionFilter = divisionValue;
+            renderFilters(); // Re-render to update the active button styles
+            renderFixtures();
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Update styling
+            document.getElementById('tab-upcoming').className = `py-4 text-sm font-semibold border-b-2 transition-colors ${tab === 'upcoming' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`;
+            document.getElementById('tab-results').className = `py-4 text-sm font-semibold border-b-2 transition-colors ${tab === 'results' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`;
+            
+            // Toggle visibility
+            document.getElementById('upcoming-container').classList.toggle('hidden', tab !== 'upcoming');
+            document.getElementById('upcoming-container').classList.toggle('block', tab === 'upcoming');
+            document.getElementById('results-container').classList.toggle('hidden', tab !== 'results');
+            document.getElementById('results-container').classList.toggle('block', tab === 'results');
+        }
+
+        function getOutcomeIconHTML(outcome) {
+            if (outcome === 'Won') return `<i data-lucide="check-circle-2" class="text-emerald-500 w-6 h-6"></i>`;
+            if (outcome === 'Lost') return `<i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i>`;
+            if (outcome === 'Draw') return `<i data-lucide="minus-circle" class="text-amber-500 w-6 h-6"></i>`;
+            return '';
+        }
+
+        function renderFixtures() {
+            const upcomingContainer = document.getElementById('upcoming-container');
+            const resultsContainer = document.getElementById('results-container');
+            
+            let upcomingFixtures = [];
+            let pastFixtures = [];
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            initialFixtures.forEach(fixture => {
+                // Apply division filter
+                if (currentDivisionFilter !== 'All' && fixture.division !== currentDivisionFilter) {
+                    return; // Skip this fixture if it doesn't match the selected division
+                }
+
+                const fixtureDate = parseDate(fixture.date);
+                if (fixtureDate >= today && !results[fixture.id]) {
+                    upcomingFixtures.push(fixture);
+                } else {
+                    pastFixtures.push(fixture);
+                }
+            });
+
+            // Sort
+            upcomingFixtures.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+            pastFixtures.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
+            // Update Counts
+            document.getElementById('count-upcoming').innerText = upcomingFixtures.length;
+            document.getElementById('count-results').innerText = pastFixtures.length;
+
+            // Render Upcoming
+            if (upcomingFixtures.length === 0) {
+                upcomingContainer.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                        <i data-lucide="calendar" class="text-slate-300 mb-3 w-12 h-12"></i>
+                        <h3 class="text-slate-500 font-medium text-center">No upcoming matches found</h3>
+                    </div>`;
+            } else {
+                upcomingContainer.innerHTML = upcomingFixtures.map(f => createCardHTML(f)).join('');
+            }
+
+            // Render Past/Results
+            if (pastFixtures.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                        <i data-lucide="trophy" class="text-slate-300 mb-3 w-12 h-12"></i>
+                        <h3 class="text-slate-500 font-medium text-center">No past matches or results found</h3>
+                    </div>`;
+            } else {
+                resultsContainer.innerHTML = pastFixtures.map(f => createCardHTML(f)).join('');
+            }
+
+            // Re-initialize icons after modifying DOM
+            lucide.createIcons();
+        }
+
+        function createCardHTML(fixture) {
+            const details = getMatchDetails(fixture);
+            const result = results[fixture.id];
+            const badgeClass = details.isHome ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700';
+
+            let resultHTML = '';
+            if (result) {
+                const colorClass = result.outcome === 'Won' ? 'bg-emerald-50 border-emerald-100' :
+                                   result.outcome === 'Lost' ? 'bg-red-50 border-red-100' :
+                                   'bg-amber-50 border-amber-100';
+                
+                let notesHTML = result.notes ? `<p class="text-sm text-slate-600 ml-8 font-medium">${result.notes}</p>` : '';
+                
+                resultHTML = `
+                    <div class="mt-4 p-3 rounded-xl border ${colorClass}">
+                        <div class="flex items-center space-x-2 mb-1">
+                            ${getOutcomeIconHTML(result.outcome)}
+                            <span class="text-sm font-bold text-slate-800">Match ${result.outcome}</span>
+                        </div>
+                        ${notesHTML}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeClass}">
+                                ${details.locationType}
+                            </span>
+                            <span class="ml-2 text-xs text-slate-500 font-medium">${fixture.division}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-slate-900 mb-1 flex items-center">
+                                <span class="text-slate-400 mr-2 text-base font-normal">vs</span>
+                                ${details.opponent}
+                            </h3>
+                            <div class="flex items-center space-x-4 text-sm text-slate-500 mt-2">
+                                <span class="flex items-center"><i data-lucide="calendar" class="mr-1.5 w-3.5 h-3.5"></i> ${fixture.date}</span>
+                                <span class="flex items-center"><i data-lucide="clock" class="mr-1.5 w-3.5 h-3.5"></i> ${fixture.time}</span>
+                            </div>
+                            ${resultHTML}
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-4 self-stretch sm:self-center flex items-center">
+                            <button onclick="openModal('${fixture.id}')" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-colors flex items-center justify-center">
+                                ${result ? `<i data-lucide="edit-3" class="mr-2 w-4 h-4"></i> Edit Result` : `<i data-lucide="check-circle-2" class="mr-2 w-4 h-4"></i> Update Result`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- Modal Logic --- */
+        
+        function openModal(fixtureId) {
+            const fixture = initialFixtures.find(f => f.id === fixtureId);
+            const details = getMatchDetails(fixture);
+            const existingResult = results[fixtureId];
+
+            document.getElementById('modal-fixture-id').value = fixtureId;
+            document.getElementById('modal-opponent').innerText = `vs ${details.opponent}`;
+            document.getElementById('modal-details').innerText = `${fixture.date} • ${fixture.division}`;
+            
+            setOutcome(existingResult ? existingResult.outcome : 'Won');
+            document.getElementById('modal-notes').value = existingResult ? existingResult.notes : '';
+
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function setOutcome(outcome) {
+            currentOutcome = outcome;
+            
+            const btnStyles = {
+                'Won': 'bg-emerald-50 border-emerald-500 text-emerald-700',
+                'Lost': 'bg-red-50 border-red-500 text-red-700',
+                'Draw': 'bg-amber-50 border-amber-500 text-amber-700',
+                'Default': 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+            };
+
+            ['Won', 'Lost', 'Draw'].forEach(o => {
+                const btn = document.getElementById(`btn-${o}`);
+                const baseClass = "outcome-btn py-2 rounded-xl text-sm font-bold border transition-all ";
+                btn.className = baseClass + (outcome === o ? btnStyles[o] : btnStyles.Default);
+            });
+        }
+
+        document.getElementById('result-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('modal-fixture-id').value;
+            const notes = document.getElementById('modal-notes').value;
+            
+            results[id] = { outcome: currentOutcome, notes: notes };
+            localStorage.setItem('cricketAppResults', JSON.stringify(results));
+            
+            closeModal();
+            renderFixtures();
+        });
+
+        // Initialize App
+        renderFilters();
+        renderFixtures();
+        
+    </script>
+</body>
+</html>
