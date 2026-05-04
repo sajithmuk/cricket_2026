@@ -9,68 +9,70 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Smooth transitions */
-        .fade-in { animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        
         /* Hide scrollbar for horizontal scrolling on mobile */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Clean transitions */
+        .fade-in { animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-slate-50 font-sans pb-20">
+<body class="bg-slate-100 font-sans pb-20 text-slate-900">
 
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="bg-emerald-600 p-1.5 rounded-lg flex items-center justify-center">
+    <!-- ECB Style Navy Header -->
+    <header class="bg-[#001427] text-white sticky top-0 z-20 shadow-md">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-[#00A0D6] p-1.5 rounded-sm">
                     <i data-lucide="trophy" class="text-white w-5 h-5"></i>
                 </div>
-                <h1 class="text-lg font-bold text-slate-900">Team Hub</h1>
+                <h1 class="text-xl font-bold tracking-tight uppercase">Team Hub <span class="text-[#00A0D6] font-normal mx-1">|</span> 2026</h1>
             </div>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 flex space-x-6 border-b border-slate-200">
-            <button onclick="switchTab('upcoming')" id="tab-upcoming" class="py-4 text-sm font-semibold border-b-2 transition-colors border-emerald-600 text-emerald-600">
-                Upcoming Matches (<span id="count-upcoming">0</span>)
-            </button>
-            <button onclick="switchTab('results')" id="tab-results" class="py-4 text-sm font-semibold border-b-2 transition-colors border-transparent text-slate-500 hover:text-slate-700">
-                Past & Results (<span id="count-results">0</span>)
-            </button>
         </div>
     </header>
 
+    <!-- Professional Navigation Bar -->
+    <div class="bg-white border-b border-slate-200 sticky top-16 z-10 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 flex space-x-8">
+            <button onclick="switchTab('upcoming')" id="tab-upcoming" class="py-4 text-sm font-bold uppercase tracking-wider border-b-4 transition-colors border-[#00A0D6] text-[#001427]">
+                Upcoming (<span id="count-upcoming">0</span>)
+            </button>
+            <button onclick="switchTab('results')" id="tab-results" class="py-4 text-sm font-bold uppercase tracking-wider border-b-4 transition-colors border-transparent text-slate-500 hover:text-[#001427]">
+                Results (<span id="count-results">0</span>)
+            </button>
+        </div>
+    </div>
+
     <!-- Main Content -->
-    <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         
-        <!-- Filter Controls as Buttons -->
-        <div class="mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
+        <!-- Filter Controls (Clean Pills) -->
+        <div class="mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div class="flex items-center space-x-3 mb-3">
+                <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Filter Division</span>
+            </div>
             <div id="division-filters" class="flex flex-nowrap sm:flex-wrap gap-2 w-max sm:w-auto">
-                <!-- Buttons populated dynamically by JS -->
+                <!-- Buttons populated dynamically -->
             </div>
         </div>
 
         <!-- Upcoming Container -->
-        <div id="upcoming-container" class="space-y-2 block"></div>
+        <div id="upcoming-container" class="space-y-4 block"></div>
 
         <!-- Results Container -->
-        <div id="results-container" class="space-y-2 hidden"></div>
+        <div id="results-container" class="space-y-4 hidden"></div>
     </main>
 
-    <!-- Result Update Modal -->
-    <div id="modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl fade-in">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-900">Update Match Result</h2>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
-                    <i data-lucide="x-circle" class="w-6 h-6"></i>
+    <!-- Clinical Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-[#001427]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg shadow-2xl fade-in rounded-md overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-slate-100 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-[#001427] uppercase tracking-wide">Update Match Result</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
             
@@ -78,28 +80,28 @@
                 <input type="hidden" id="modal-fixture-id">
                 
                 <div class="mb-6">
-                    <p class="text-sm text-slate-500 mb-1" id="modal-opponent"></p>
-                    <p class="text-xs font-medium text-slate-400" id="modal-details"></p>
+                    <p class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1" id="modal-details"></p>
+                    <p class="text-xl font-black text-[#001427]" id="modal-opponent"></p>
                 </div>
 
-                <div class="space-y-5">
+                <div class="space-y-6">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Match Outcome</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <button type="button" onclick="setOutcome('Won')" id="btn-Won" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-emerald-50 border-emerald-500 text-emerald-700">Won</button>
-                            <button type="button" onclick="setOutcome('Lost')" id="btn-Lost" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Lost</button>
-                            <button type="button" onclick="setOutcome('Draw')" id="btn-Draw" class="outcome-btn py-2 rounded-xl text-sm font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Draw</button>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Outcome</label>
+                        <div class="grid grid-cols-3 gap-0 border border-slate-300 rounded-md overflow-hidden">
+                            <button type="button" onclick="setOutcome('Won')" id="btn-Won" class="outcome-btn py-3 text-sm font-bold border-r border-slate-300 transition-colors">WON</button>
+                            <button type="button" onclick="setOutcome('Lost')" id="btn-Lost" class="outcome-btn py-3 text-sm font-bold border-r border-slate-300 transition-colors">LOST</button>
+                            <button type="button" onclick="setOutcome('Draw')" id="btn-Draw" class="outcome-btn py-3 text-sm font-bold transition-colors">DRAW</button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Notes / Score (Optional)</label>
-                        <input type="text" id="modal-notes" placeholder="e.g. Won by 5 wickets, 120/4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow text-sm">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Score & Notes <span class="font-normal normal-case text-slate-400">(Optional)</span></label>
+                        <input type="text" id="modal-notes" placeholder="e.g. Won by 5 wickets, 120/4" class="w-full px-4 py-3 bg-white border border-slate-300 focus:outline-none focus:border-[#00A0D6] focus:ring-1 focus:ring-[#00A0D6] rounded-sm transition-all text-sm">
                     </div>
                 </div>
 
                 <div class="mt-8">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-sm">
+                    <button type="submit" class="w-full bg-[#00A0D6] hover:bg-[#0089b8] text-white font-bold uppercase tracking-widest py-4 px-4 rounded-sm transition-colors">
                         Save Result
                     </button>
                 </div>
@@ -110,21 +112,18 @@
     <!-- Application Logic -->
     <script>
         const initialFixtures = [
-            // Under 11
             { id: 'u11-1', date: "03/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Goresbrook CC" },
             { id: 'u11-2', date: "10/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Newham CC", away: "Memorial Park Cricket Academy" },
             { id: 'u11-3', date: "05/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Aztecs CC, Ilford B" },
             { id: 'u11-4', date: "12/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Ekota Academy", away: "Memorial Park Cricket Academy" },
             { id: 'u11-5', date: "26/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "South Loughton CC" },
             { id: 'u11-6', date: "02/08/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Fives and Heronians CC B", away: "Memorial Park Cricket Academy" },
-            // Under 9 - Don Coates
             { id: 'u9dc-1', date: "10/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Aztecs CC, Ilford - Under 9 - DC" },
             { id: 'u9dc-2', date: "17/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Frenford CC - Under 9 - DC B", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9dc-3', date: "24/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Buckhurst Hill CC - Under 9 B" },
             { id: 'u9dc-4', date: "31/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Walthamstow CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9dc-5', date: "28/06/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Woodford Wells CC - Under 9 - DC B" },
             { id: 'u9dc-6', date: "12/07/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Woodford Green CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
-            // Under 9 - Freddie Goldman
             { id: 'u9fg-1', date: "07/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Woodford Wells CC - Under 9", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9fg-2', date: "14/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Leyton Wicketz CC - Under 9" },
             { id: 'u9fg-3', date: "05/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Wanstead & Snaresbrook CC - Under 9 - Hardball A", away: "South Woodford CC - South Woodford & Memorial Park CA" },
@@ -142,6 +141,17 @@
             return new Date(y, m - 1, d);
         };
 
+        const formatDateBlock = (dateStr) => {
+            const date = parseDate(dateStr);
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            return {
+                dayName: days[date.getDay()],
+                dayNum: dateStr.split('/')[0],
+                month: months[date.getMonth()]
+            };
+        };
+
         const getMatchDetails = (fixture) => {
             const isOurHome = fixture.home.includes("Memorial Park");
             const opponent = isOurHome ? fixture.away : fixture.home;
@@ -149,11 +159,10 @@
             return {
                 opponent: cleanOpponent,
                 isHome: isOurHome,
-                locationType: isOurHome ? 'Home' : 'Away'
+                locationType: isOurHome ? 'HOME' : 'AWAY'
             };
         };
 
-        // Render the filter buttons dynamically
         function renderFilters() {
             const filterContainer = document.getElementById('division-filters');
             const uniqueDivisions = ['All', ...new Set(initialFixtures.map(f => f.division))];
@@ -161,16 +170,15 @@
             filterContainer.innerHTML = uniqueDivisions.map(division => {
                 const isActive = currentDivisionFilter === division;
                 
-                // Define classes based on whether the button is the active filter
-                const activeClasses = "bg-slate-800 text-white shadow-md border-slate-800";
-                const inactiveClasses = "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50";
+                const activeClasses = "bg-[#001427] text-white border-[#001427]";
+                const inactiveClasses = "bg-white text-slate-600 border-slate-300 hover:border-[#001427] hover:text-[#001427]";
                 
-                const label = division === 'All' ? 'All Divisions' : division;
+                const label = division === 'All' ? 'ALL DIVISIONS' : division;
                 
                 return `
                     <button 
                         onclick="filterDivision('${division}')" 
-                        class="px-4 py-2 rounded-xl text-sm font-semibold border transition-all whitespace-nowrap ${isActive ? activeClasses : inactiveClasses}"
+                        class="px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-wider border transition-colors whitespace-nowrap ${isActive ? activeClasses : inactiveClasses}"
                     >
                         ${label}
                     </button>
@@ -180,29 +188,23 @@
 
         function filterDivision(divisionValue) {
             currentDivisionFilter = divisionValue;
-            renderFilters(); // Re-render to update the active button styles
+            renderFilters(); 
             renderFixtures();
         }
 
         function switchTab(tab) {
             activeTab = tab;
             
-            // Update styling
-            document.getElementById('tab-upcoming').className = `py-4 text-sm font-semibold border-b-2 transition-colors ${tab === 'upcoming' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`;
-            document.getElementById('tab-results').className = `py-4 text-sm font-semibold border-b-2 transition-colors ${tab === 'results' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`;
+            const activeClass = "py-4 text-sm font-bold uppercase tracking-wider border-b-4 transition-colors border-[#00A0D6] text-[#001427]";
+            const inactiveClass = "py-4 text-sm font-bold uppercase tracking-wider border-b-4 transition-colors border-transparent text-slate-500 hover:text-[#001427]";
+
+            document.getElementById('tab-upcoming').className = tab === 'upcoming' ? activeClass : inactiveClass;
+            document.getElementById('tab-results').className = tab === 'results' ? activeClass : inactiveClass;
             
-            // Toggle visibility
             document.getElementById('upcoming-container').classList.toggle('hidden', tab !== 'upcoming');
             document.getElementById('upcoming-container').classList.toggle('block', tab === 'upcoming');
             document.getElementById('results-container').classList.toggle('hidden', tab !== 'results');
             document.getElementById('results-container').classList.toggle('block', tab === 'results');
-        }
-
-        function getOutcomeIconHTML(outcome) {
-            if (outcome === 'Won') return `<i data-lucide="check-circle-2" class="text-emerald-500 w-6 h-6"></i>`;
-            if (outcome === 'Lost') return `<i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i>`;
-            if (outcome === 'Draw') return `<i data-lucide="minus-circle" class="text-amber-500 w-6 h-6"></i>`;
-            return '';
         }
 
         function renderFixtures() {
@@ -216,10 +218,7 @@
             today.setHours(0, 0, 0, 0);
 
             initialFixtures.forEach(fixture => {
-                // Apply division filter
-                if (currentDivisionFilter !== 'All' && fixture.division !== currentDivisionFilter) {
-                    return; // Skip this fixture if it doesn't match the selected division
-                }
+                if (currentDivisionFilter !== 'All' && fixture.division !== currentDivisionFilter) return;
 
                 const fixtureDate = parseDate(fixture.date);
                 if (fixtureDate >= today && !results[fixture.id]) {
@@ -229,105 +228,96 @@
                 }
             });
 
-            // Sort
             upcomingFixtures.sort((a, b) => parseDate(a.date) - parseDate(b.date));
             pastFixtures.sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
-            // Update Counts
             document.getElementById('count-upcoming').innerText = upcomingFixtures.length;
             document.getElementById('count-results').innerText = pastFixtures.length;
 
-            // Render Upcoming
-            if (upcomingFixtures.length === 0) {
-                upcomingContainer.innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
-                        <i data-lucide="calendar" class="text-slate-300 mb-3 w-12 h-12"></i>
-                        <h3 class="text-slate-500 font-medium text-center">No upcoming matches found</h3>
-                    </div>`;
-            } else {
-                upcomingContainer.innerHTML = upcomingFixtures.map(f => createCardHTML(f)).join('');
-            }
+            const emptyStateHTML = (text) => `
+                <div class="text-center py-16 bg-white border border-slate-200 rounded-sm">
+                    <h3 class="text-slate-400 font-bold uppercase tracking-widest">${text}</h3>
+                </div>`;
 
-            // Render Past/Results
-            if (pastFixtures.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
-                        <i data-lucide="trophy" class="text-slate-300 mb-3 w-12 h-12"></i>
-                        <h3 class="text-slate-500 font-medium text-center">No past matches or results found</h3>
-                    </div>`;
-            } else {
-                resultsContainer.innerHTML = pastFixtures.map(f => createCardHTML(f)).join('');
-            }
+            upcomingContainer.innerHTML = upcomingFixtures.length === 0 ? emptyStateHTML('No upcoming matches') : upcomingFixtures.map(f => createCardHTML(f)).join('');
+            resultsContainer.innerHTML = pastFixtures.length === 0 ? emptyStateHTML('No results found') : pastFixtures.map(f => createCardHTML(f)).join('');
 
-            // Re-initialize icons after modifying DOM
             lucide.createIcons();
         }
 
         function createCardHTML(fixture) {
             const details = getMatchDetails(fixture);
             const result = results[fixture.id];
-            const badgeClass = details.isHome ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700';
+            const dateBlock = formatDateBlock(fixture.date);
+            
+            const borderAccent = details.isHome ? 'border-l-[#00A0D6]' : 'border-l-slate-400';
 
             let resultHTML = '';
             if (result) {
-                const colorClass = result.outcome === 'Won' ? 'bg-emerald-50 border-emerald-100' :
-                                   result.outcome === 'Lost' ? 'bg-red-50 border-red-100' :
-                                   'bg-amber-50 border-amber-100';
-                
-                let notesHTML = result.notes ? `<p class="text-sm text-slate-600 ml-8 font-medium">${result.notes}</p>` : '';
+                const colorClass = result.outcome === 'Won' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                   result.outcome === 'Lost' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                   'bg-amber-50 text-amber-700 border-amber-200';
                 
                 resultHTML = `
-                    <div class="mt-4 p-3 rounded-xl border ${colorClass}">
-                        <div class="flex items-center space-x-2 mb-1">
-                            ${getOutcomeIconHTML(result.outcome)}
-                            <span class="text-sm font-bold text-slate-800">Match ${result.outcome}</span>
-                        </div>
-                        ${notesHTML}
+                    <div class="mt-4 p-3 border ${colorClass} flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm">
+                        <span class="font-bold uppercase tracking-wider text-sm mb-1 sm:mb-0">Match ${result.outcome}</span>
+                        ${result.notes ? `<span class="text-sm font-medium opacity-90">${result.notes}</span>` : ''}
                     </div>
                 `;
             }
 
             return `
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-4 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeClass}">
+                <div class="bg-white border border-slate-200 border-l-4 ${borderAccent} flex flex-col md:flex-row rounded-sm shadow-sm hover:shadow-md transition-shadow">
+                    
+                    <!-- Clinical Date Block (ECB Style) -->
+                    <div class="p-4 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 flex flex-row md:flex-col items-center justify-center md:w-28 shrink-0">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-widest mr-2 md:mr-0">${dateBlock.dayName}</span>
+                        <span class="text-3xl font-black text-[#001427] leading-none my-1">${dateBlock.dayNum}</span>
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-widest ml-2 md:ml-0">${dateBlock.month}</span>
+                    </div>
+
+                    <!-- Match Details -->
+                    <div class="p-5 flex-1 flex flex-col justify-center">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600 rounded-sm border border-slate-200">
+                                ${fixture.division}
+                            </span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${details.isHome ? 'bg-[#001427] text-white' : 'bg-slate-200 text-slate-700'} rounded-sm">
                                 ${details.locationType}
                             </span>
-                            <span class="ml-2 text-xs text-slate-500 font-medium">${fixture.division}</span>
+                            <span class="flex items-center text-xs font-bold text-slate-500 ml-auto">
+                                <i data-lucide="clock" class="mr-1 w-3 h-3"></i> ${fixture.time}
+                            </span>
                         </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                        <div class="flex-1">
-                            <h3 class="text-xl font-bold text-slate-900 mb-1 flex items-center">
-                                <span class="text-slate-400 mr-2 text-base font-normal">vs</span>
+                        
+                        <div class="flex items-center mt-1">
+                            <span class="text-sm font-bold text-slate-400 mr-3 uppercase">VS</span>
+                            <h3 class="text-xl font-black text-[#001427] uppercase tracking-wide">
                                 ${details.opponent}
                             </h3>
-                            <div class="flex items-center space-x-4 text-sm text-slate-500 mt-2">
-                                <span class="flex items-center"><i data-lucide="calendar" class="mr-1.5 w-3.5 h-3.5"></i> ${fixture.date}</span>
-                                <span class="flex items-center"><i data-lucide="clock" class="mr-1.5 w-3.5 h-3.5"></i> ${fixture.time}</span>
-                            </div>
-                            ${resultHTML}
                         </div>
-                        <div class="mt-4 sm:mt-0 sm:ml-4 self-stretch sm:self-center flex items-center">
-                            <button onclick="openModal('${fixture.id}')" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-colors flex items-center justify-center">
-                                ${result ? `<i data-lucide="edit-3" class="mr-2 w-4 h-4"></i> Edit Result` : `<i data-lucide="check-circle-2" class="mr-2 w-4 h-4"></i> Update Result`}
-                            </button>
-                        </div>
+
+                        ${resultHTML}
+                    </div>
+                    
+                    <!-- Action Button Area -->
+                    <div class="p-4 bg-slate-50 border-t md:border-t-0 md:border-l border-slate-200 flex items-center justify-center md:w-40 shrink-0">
+                        <button onclick="openModal('${fixture.id}')" class="w-full px-4 py-2 bg-white border border-[#00A0D6] text-[#00A0D6] hover:bg-[#00A0D6] hover:text-white text-xs font-bold uppercase tracking-widest rounded-sm transition-colors flex items-center justify-center">
+                            ${result ? 'Edit Result' : 'Update'}
+                        </button>
                     </div>
                 </div>
             `;
         }
 
         /* --- Modal Logic --- */
-        
         function openModal(fixtureId) {
             const fixture = initialFixtures.find(f => f.id === fixtureId);
             const details = getMatchDetails(fixture);
             const existingResult = results[fixtureId];
 
             document.getElementById('modal-fixture-id').value = fixtureId;
-            document.getElementById('modal-opponent').innerText = `vs ${details.opponent}`;
+            document.getElementById('modal-opponent').innerText = `VS ${details.opponent}`;
             document.getElementById('modal-details').innerText = `${fixture.date} • ${fixture.division}`;
             
             setOutcome(existingResult ? existingResult.outcome : 'Won');
@@ -343,17 +333,19 @@
         function setOutcome(outcome) {
             currentOutcome = outcome;
             
-            const btnStyles = {
-                'Won': 'bg-emerald-50 border-emerald-500 text-emerald-700',
-                'Lost': 'bg-red-50 border-red-500 text-red-700',
-                'Draw': 'bg-amber-50 border-amber-500 text-amber-700',
-                'Default': 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+            const baseClass = "outcome-btn py-3 text-sm font-bold uppercase tracking-widest transition-colors ";
+            
+            const styles = {
+                'Won': outcome === 'Won' ? 'bg-[#001427] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100',
+                'Lost': outcome === 'Lost' ? 'bg-[#001427] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100',
+                'Draw': outcome === 'Draw' ? 'bg-[#001427] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100',
             };
 
             ['Won', 'Lost', 'Draw'].forEach(o => {
                 const btn = document.getElementById(`btn-${o}`);
-                const baseClass = "outcome-btn py-2 rounded-xl text-sm font-bold border transition-all ";
-                btn.className = baseClass + (outcome === o ? btnStyles[o] : btnStyles.Default);
+                // Re-apply border-r to the first two buttons so the grid looks like a segmented control
+                let borderClass = o !== 'Draw' ? 'border-r border-slate-300 ' : '';
+                btn.className = baseClass + borderClass + styles[o];
             });
         }
 
