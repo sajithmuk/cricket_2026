@@ -112,23 +112,36 @@
     <!-- Application Logic -->
     <script>
         const initialFixtures = [
+            // Under 11 Haydn Davies Foster
             { id: 'u11-1', date: "03/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Goresbrook CC" },
             { id: 'u11-2', date: "10/05/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Newham CC", away: "Memorial Park Cricket Academy" },
             { id: 'u11-3', date: "05/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "Aztecs CC, Ilford B" },
             { id: 'u11-4', date: "12/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Ekota Academy", away: "Memorial Park Cricket Academy" },
             { id: 'u11-5', date: "26/07/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Memorial Park Cricket Academy", away: "South Loughton CC" },
             { id: 'u11-6', date: "02/08/2026", time: "09:30", division: "U11 Haydn Davies Foster", home: "Fives and Heronians CC B", away: "Memorial Park Cricket Academy" },
+            
+            // Under 9 Don Coates Grp 3
             { id: 'u9dc-1', date: "10/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Aztecs CC, Ilford - Under 9 - DC" },
             { id: 'u9dc-2', date: "17/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Frenford CC - Under 9 - DC B", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9dc-3', date: "24/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Buckhurst Hill CC - Under 9 B" },
             { id: 'u9dc-4', date: "31/05/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Walthamstow CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9dc-5', date: "28/06/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Woodford Wells CC - Under 9 - DC B" },
             { id: 'u9dc-6', date: "12/07/2026", time: "09:30", division: "U9 Don Coates Grp 3", home: "Woodford Green CC - Under 9 - DC", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+            
+            // Under 9 Freddie Goldman Grp 1
             { id: 'u9fg-1', date: "07/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Woodford Wells CC - Under 9", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9fg-2', date: "14/06/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Leyton Wicketz CC - Under 9" },
             { id: 'u9fg-3', date: "05/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Wanstead & Snaresbrook CC - Under 9 - Hardball A", away: "South Woodford CC - South Woodford & Memorial Park CA" },
             { id: 'u9fg-4', date: "19/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "South Woodford CC - South Woodford & Memorial Park CA", away: "Ilford CC - Under 9" },
             { id: 'u9fg-5', date: "26/07/2026", time: "09:30", division: "U9 Freddie Goldman Grp 1", home: "Bancroft Lions CC - Under 9 - Hardball", away: "South Woodford CC - South Woodford & Memorial Park CA" },
+
+            // NEW: Under 11 Keith Hurst Grp 1
+            { id: 'u11kh-1', date: "24/05/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Memorial Park Cricket Academy - Under 11 Softball", away: "Avengers CC - Under 11 Softball" },
+            { id: 'u11kh-2', date: "31/05/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Memorial Park Cricket Academy - Under 11 Softball", away: "Frenford CC - Under 11 Softball" },
+            { id: 'u11kh-3', date: "07/06/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Memorial Park Cricket Academy - Under 11 Softball", away: "West Ham CC - Under 11 Softball" },
+            { id: 'u11kh-4', date: "14/06/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Bancroft Lions CC - Under 11 Softball", away: "Memorial Park Cricket Academy - Under 11 Softball" },
+            { id: 'u11kh-5', date: "28/06/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Memorial Park Cricket Academy - Under 11 Softball", away: "South Woodford CC - Under 11 Softball" },
+            { id: 'u11kh-6', date: "19/07/2026", time: "09:30", division: "U11 Keith Hurst Grp 1", home: "Walthamstow CC - Under 11 Softball", away: "Memorial Park Cricket Academy - Under 11 Softball" }
         ];
 
         let results = JSON.parse(localStorage.getItem('cricketAppResults')) || {};
@@ -155,7 +168,13 @@
         const getMatchDetails = (fixture) => {
             const isOurHome = fixture.home.includes("Memorial Park");
             const opponent = isOurHome ? fixture.away : fixture.home;
-            const cleanOpponent = opponent.replace(" - Under 9", "").replace(" - DC", "").trim();
+            // Clean up all the various suffixes to keep the opponent names looking pristine
+            const cleanOpponent = opponent
+                .replace(" - Under 9", "")
+                .replace(" - DC", "")
+                .replace(" - Under 11 Softball", "")
+                .trim();
+                
             return {
                 opponent: cleanOpponent,
                 isHome: isOurHome,
@@ -278,7 +297,7 @@
 
                     <!-- Match Details -->
                     <div class="p-5 flex-1 flex flex-col justify-center">
-                        <div class="flex items-center space-x-2 mb-2">
+                        <div class="flex flex-wrap gap-2 items-center mb-2">
                             <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600 rounded-sm border border-slate-200">
                                 ${fixture.division}
                             </span>
